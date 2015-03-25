@@ -1,105 +1,127 @@
 ### Goal
 
-Explore creating a rich and interactive mapping application with Mapbox.js
+Create a rich mapping application with many different functions including ajax requests
 
-### Prerequisites: 
-* A text editor. I prefer [Sublime Text](http://www.sublimetext.com/).
-* A working knowledge of JavaScript and/or the tenacity to learn it. 
+### Prerequisites
+* Text editor
 
 ### Intro
 
-Mapbox.js is JavaScript library that allows developers to create rich mapping applications. TileMill creates the pretty tiles, Mapbox.js adds the interactivity like geolocation, markers and layer switching. If you have ever used Leaflet, getting started with Mapbox.js will be used because Mapbox.js is built on top of Leaflet. Mapbox.js makes it easy to use the Mapbox ecosystem of tools.
-
-As a refresher, let’s look at how a simple map is created with Mapbox.js 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset=utf-8 />
-  <title>A simple map</title>
-  <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.js'></script>
-  <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.css' rel='stylesheet' />
-  <style>
-  #body {
-    margin: 0;
-    padding: 0;
-  }
-  #map {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 100%;
-  }
-  </style>
-</head>
-<body>
-  <div id='map'></div>
-  <script>
-  // Set the access token
-  L.mapbox.accessToken = 'pk.eyJ1IjoiYm9iYnlzdWQiLCJhIjoiTi16MElIUSJ9.Clrqck--7WmHeqqvtFdYig';
-
-   // start the map and set the initial view
-  var map = L.mapbox.map('map', 'examples.map-i86nkdio');
-  map.setView([40, -74.50], 9);
-
-  // Create a marker
-  var myMarker = L.marker([40, -74.50]);
-  myMarker.bindPopup('<p>Hello this is a marker with HTML inside of it!</p><img src="http://remycarreiro.com/wp-content/uploads/2015/01/murs-rem.jpg" alt="Bill Murray" width="250px"/>');
-  myMarker.addTo(map);
-
-  </script>
-</body>
-</html>
-```
-
-
-This will render a map that looks like this. HTML is made up of a series of open and closing tags like `<head>` (opening)  `</head>` (closing). Data goes between these tags. In the head, metadata data for a page is loaded. The title is set, and also Mapbox.js is loaded. Both a .js file and .css file are need for Mapbox.js to work properly.
-
-```html
-<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.js'></script>
-<link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.css' rel='stylesheet' /> 
-```
-
-Also, we set basic styling for the map in the head. Between the `<style>` the tags, css styling is applied to make the map fill up the entire screen. 
-
-In between the `<body>` a map div is created to attach the map to. Notice, the id is 'map'. With Mapbox.js you attached the map object to an id and not a class.
-
-The final action that occurs on this page is instantiating the map. 
+In this tutorial, I’m going to go through a variety of function and events to give you a reference for future reusable code. Think of this as a ‘kitchen sink’ tutorial. 
 
 ```javascript
 L.mapbox.accessToken = 'pk.eyJ1IjoiYm9iYnlzdWQiLCJhIjoiTi16MElIUSJ9.Clrqck--7WmHeqqvtFdYig';
+var map = L.mapbox.map('map').setView([38.8922, -77.0348], 14);
 ```
 
-Don’t worry too much about this line. Here, we’re setting the access token. This is used for counting the number of times I load a Mapbox map.
+Create the map by first setting the access token. When starting the map on the next line, I am not passing in a map. This is because the mapid is added when adding the layer toggle. 
 
 ```javascript
-var map = L.mapbox.map('map', 'examples.map-i86nkdio')
-map.setView([40, -74.50], 9);
+L.control.layers({
+    'Base Map': L.mapbox.tileLayer('bobbysud.lff26a2e').addTo(map),
+    'Satellite Map': L.mapbox.tileLayer('bobbysud.lejdhfmk')
+}).addTo(map);
 ```
 
-Here, we’re making a variable called map. L.mapbox.map takes two arguments.  The first is the id of the div to attach it to, map - <div id='map'></div>. The second is map id. Mapids can be created on mapbox.com and represent your custom map. Then we’re setting the view of the variable map with the setView function. It takes two arguments, an array of latitude longitude and a zoom level. A zoom level represents how far your map is zoomed in. 
+This adds a layer toggle and adds the initial map layer to the map. 
 
 ```javascript
-var myMarker = L.marker([40, -74.50]);
-myMarker.bindPopup('<p>Hello this is a marker with HTML inside of it!</p><img src="http://remycarreiro.com/wp-content/uploads/2015/01/murs-rem.jpg" alt="Bill Murray" width="250px"/>');
-myMarker.addTo(map);
+var userLocationMarker = L.marker();
+var mtRushmoreMarker = L.marker([43.879102, -103.459067], {
+    draggable: true
+}).addTo(map);
 ```
 
-Creating a simple marker is as easy as L.marker([lat, lng]);. Once created, I added text and and an image using the bindPopup function. This function takes one argument which is the text in the popup. As you can see, this text can be HTML which allows for very cool customization. Finally, I add the myMarker to the map using the addTo function which takes one argument, the name of the map object. 
-
-### Test
-
-Create a custom map and add a marker for every place you have visited around the world. Add a popup for each location with either text, an image or a video embed, at least 1 of each type. The map should load with all markers in view and should fill the entire page. 
-
-### Notes
-
-Mapbox.js allows for chaining. This means you can chain each function together using a period and ending with a semicolon:
+Next, the markers are added to map. `userLocationMarker` is added to the map without any coordinates because we do not yet know the coordinates of the user. It will be set once the users location is found. Notice the second argument on the mtRushmoreMarker variable, this is where options can be set. You can make a marker draggable by setting draggable: true.
 
 ```javascript
-L.marker([40, -74.50])
-    .bindPopup('<p>Hello world!</p>')
-    .openPopup()
-    .addTo(map);
+var route = L.layerGroup().addTo(map);
 ```
 
-If you never need to call that marker variable again, you do not need to set it. Each function can be ‘chained’ one after another making it more readable if you need to add many markers.
+The route layerGroup will be used to store the route from the users location to Mt. Rushmore. I chose to store it as a layerGroup so I can easily clear the layer each time a new route is calculated.
+
+```javascript
+map.on('locationfound', onLocationFound);
+map.on('locationerror', onLocationError);
+
+map.locate({
+    setView: true,
+    maxZoom: 16
+});
+
+function onLocationFound(e) {
+    userLocationMarker.setLatLng(e.latlng).addTo(map)
+        .bindPopup('<button id="get-directions">Get Directions to Mt. Rushmore.</button>').openPopup();
+
+    $('#get-directions').click(function() {
+        var from = [userLocationMarker.getLatLng().lat, userLocationMarker.getLatLng().lng];
+        var to = [mtRushmoreMarker.getLatLng().lat, mtRushmoreMarker.getLatLng().lng];
+        getDirections(from, to);
+    });
+}
+
+function onLocationError(e) {
+    alert(e.message);
+}
+```
+
+Getting the users location is easy with Mapbox.js. `map.locate()` starts the process. `map.on('locationfound', onLocationFound);` and `map.on('locationerror', onLocationError);` handle success and error events. An error event can occur when the user denies access or there was an issue in finding the location. Once the user is found, a marker with a popup is added, prompting the user to click a button. 
+
+```javascript
+$('#get-directions').click(function() {
+    var from = [userLocationMarker.getLatLng().lat, userLocationMarker.getLatLng().lng];
+    var to = [mtRushmoreMarker.getLatLng().lat, mtRushmoreMarker.getLatLng().lng];
+    getDirections(from, to);
+});
+```
+
+The `.click` function allows us to listen for click events on the button. If the user clicks the button, the `userLocationMarker` and the `mtRushmoreMarker`’s location is retreived by the `getLatLng()` function. Then the custom `getDirections()` function  is called with these two locations. 
+
+```javascript
+function getDirections(from, to) {
+    $.ajax({
+        url: 'https://api.tiles.mapbox.com/v4/directions/mapbox.driving/' + from[1] + ',' + from[0] + ';' + to[1] + ',' + to[0] + '.json?instructions=html&geometry=polyline&access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IlhHVkZmaW8ifQ.hAMX5hSW-QnTeRCMAy9A8Q&geometry=geojson',
+        type: 'GET',
+        success: function(data) {
+
+            route.clearLayers();
+            var geojson = L.geoJson(data.routes[0].geometry, {
+                style: function(feature) {
+                    return {
+                        color: 'orange'
+                    };
+                }
+            }).addTo(route);
+            map.fitBounds(geojson.getBounds());
+
+            mtRushmoreMarker
+                .bindPopup('Drag the marker to get directions to a new place!')
+                .openPopup();
+
+        },
+        error: function(e) {
+            console.log(e);
+        }
+    });
+}
+```
+
+`getDirections()` take two arguemtns both of with are arrays. The first is the from location, and the second is the to location. Within the function, an ajax request is made. An ajax request allows you to get data from an external location, in this case a directions api request is made. If the request is successful, everything in the success area runs:
+
+```javascript
+route.clearLayers();
+var geojson = L.geoJson(data.routes[0].geometry, {
+    style: function(feature) {
+        return {
+            color: 'orange'
+        };
+    }
+}).addTo(route);
+map.fitBounds(geojson.getBounds());
+
+mtRushmoreMarker
+    .bindPopup('Drag the marker to get directions to a new place!')
+    .openPopup();
+```
+
+First the route layer is cleared. This needs to happen so we don’t keep adding new routes to the map. Next, Mapbox direction api returns geojson. This allows us to directly add a geojson layer via the L.geoJson function. Instead of adding the layer to the map directly, I add it to the route layer, which is already added to the map. Once it’s been added, We can zoom comfortable to the area using the fitBounds function. Finally, I set the popup of text and open it with `openPopup()`.

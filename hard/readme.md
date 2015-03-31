@@ -1,13 +1,60 @@
 ### Goal
 
-Create a rich mapping application with many different functions including ajax requests
+Create a rich mapping application with many different functions and events.
 
 ### Prerequisites
-* Text editor
+* A text editor. I prefer Sublime Text.
+* A way to serve up files locally, [read more here](https://github.com/bsudekum/tutorials#serving-files-locally).
+
+### [Demo of final product](http://bsudekum.github.io/tutorials/hard/)
 
 ### Intro
 
 In this tutorial, I’m going to go through a variety of function and events to give you a reference for future reusable code. Think of this as a ‘kitchen sink’ tutorial. 
+
+For this tutorial, I've broken the project up into 3 different files: `index.html`, `site.css` and `site.js`. I did this to make it more manageable - having one HTML file with all the HTML, CSS and Javascript can get cumbersome. 
+
+Let's start by creating the `index.html` file.
+
+```html
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset=utf-8 />
+  <title>Kitchen Sink Example</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.css' rel='stylesheet' />
+  <link rel='stylesheet' href='site.css'>
+</head>
+
+<body>
+  <div id='map'></div>
+  <script src='https://code.jquery.com/jquery-2.1.3.min.js'></script>
+  <script src='site.js'></script>
+</body>
+
+</html>
+```
+
+Notice how it references the external libraries and also local/relative files. The first local file that is referenced is `site.css`, let's create that. It contains:
+
+```css
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+```
+
+Nothing fancy, just setup the map by giving it a position and size. Next, we can begin with the Javascript.
 
 ```javascript
 L.mapbox.accessToken = 'pk.eyJ1IjoiYm9iYnlzdWQiLCJhIjoiTi16MElIUSJ9.Clrqck--7WmHeqqvtFdYig';
@@ -23,7 +70,7 @@ L.control.layers({
 }).addTo(map);
 ```
 
-This adds a layer toggle and adds the initial map layer to the map. 
+This adds a layer toggle to the map. Since we did not pass in a map idea with `L.mapbox.map('map')`, I added it to the map here. `L.control.layers` takes two arguments where the first argument are baselayers and the second argument is overlays.
 
 ```javascript
 var userLocationMarker = L.marker();
@@ -32,7 +79,7 @@ var mtRushmoreMarker = L.marker([43.879102, -103.459067], {
 }).addTo(map);
 ```
 
-Next, the markers are added to map. `userLocationMarker` is added to the map without any coordinates because we do not yet know the coordinates of the user. It will be set once the users location is found. Notice the second argument on the mtRushmoreMarker variable, this is where options can be set. You can make a marker draggable by setting draggable: true.
+Next, the markers are added to map. `userLocationMarker` is added to the map without any coordinates because we do not yet know the coordinates of the user. It will be set once the users location is found. Notice the second argument on the `mtRushmoreMarker` variable, this is where options can be set. You can make a marker draggable by setting `draggable: true`.
 
 ```javascript
 var route = L.layerGroup().addTo(map);

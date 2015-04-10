@@ -55,7 +55,8 @@ function getDirections(from, to) {
 
 function onLocationFound(e) {
     userLocationMarker.setLatLng(e.latlng).addTo(map)
-        .bindPopup('<button id="get-directions">Get Directions to Mt. Rushmore.</button>').openPopup();
+        .bindPopup('<button id="get-directions">Get Directions to Mt. Rushmore.</button>')
+        .openPopup();
 
     $('#get-directions').click(function() {
         var from = [userLocationMarker.getLatLng().lat, userLocationMarker.getLatLng().lng];
@@ -64,6 +65,16 @@ function onLocationFound(e) {
     });
 }
 
-function onLocationError(e) {
-    alert(e.message);
+function onLocationError() {
+    alert('Error finding your location');
+
+    userLocationMarker.setLatLng([38.8922, -77.0348]).addTo(map)
+        .bindPopup('<button id="get-directions">Get Directions to Mt. Rushmore.</button>')
+        .openPopup();
+
+    $('#get-directions').click(function() {
+        var from = [38.8922, -77.0348];
+        var to = [mtRushmoreMarker.getLatLng().lat, mtRushmoreMarker.getLatLng().lng];
+        getDirections(from, to);
+    });
 }

@@ -160,6 +160,18 @@ At this point, your UI should look like:
 
 ![](https://cldup.com/3a-3vhV1p0.png)
 
+Import the `nypd_stopfrisk2011_gunstops.shp` file and give it the following style: 
+
+```css
+#nypdstopfrisk2011gun {
+  marker-height:[STOPCNT] * 4;
+  marker-fill: #e980ef;
+  marker-line-width:0;
+}
+```
+
+Notice here `marker-height:[STOPCNT] * 4;`. This allows us to dynamically style a layer. Here, able to vary the width of the marker by the field `STOPCNT`. 
+
 Now it's time to export the map for the web. TileMill exports interactive maps as a filetype called `mbtiles`. Click the `Export` button in the upper right corner and then the `mbtiles` button. Give the map a name and description if you'd like. Set the zoom range from 0 - 14. This will keep the export time shorter. We'll also want to restrict the bounding box of the map. You can zoom to the NYC or paste this: `-74.2631,40.4934,-73.6932,40.9161`. Also change the default center to `-73.9828,40.7315,13`. Finally click export.
 
 While it is exporting, create an account on mapbox.com if you have not done so already and head to [mapbox.com/uploads](https://www.mapbox.com/uploads/). Once the export is complete, save the mbtiles file somewhere. Click the `Select File` button from the mapbox.com/uploads UI. Select the mbtiles project. Your map should now be live!
@@ -169,5 +181,8 @@ You can embed the map on your site with a simple iframe, simple change the `src`
 ```html
 <iframe width="100%" height="500px" frameBorder="0" src="https://a.tiles.mapbox.com/v4/bobbysud.16frms4i.html?access_token=pk.eyJ1IjoiYm9iYnlzdWQiLCJhIjoiTi16MElIUSJ9.Clrqck--7WmHeqqvtFdYig"></iframe>
 ```
+
+### Test
+Import and style 3 custom datasets. The map should contain point, line and polygon sources. A tooltip should be enabled on one source. Upload the final map to mapbox.com.
 
 
